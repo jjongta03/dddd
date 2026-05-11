@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>리콜릿 | AI 정보 카드 저장함</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="주요 메뉴">
+        <div class="brand">
+          <div class="brand-mark">R</div>
+          <div>
+            <strong>리콜릿</strong>
+            <span>AI 정보 카드 저장함</span>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item active" type="button">
+            <span>⌂</span>
+            오늘
+          </button>
+          <button class="nav-item" type="button">
+            <span>▦</span>
+            모든 카드
+          </button>
+          <button class="nav-item" type="button">
+            <span>⏱</span>
+            리마인드
+          </button>
+          <button class="nav-item" type="button">
+            <span>🔒</span>
+            민감 정보
+          </button>
+        </nav>
+
+        <div class="sidebar-panel">
+          <p>이번 주 예정</p>
+          <strong>5개</strong>
+          <span>마감 3일 이내 카드 2개</span>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">2026년 5월 11일 월요일</p>
+            <h1>저장한 정보를 다시 행동으로</h1>
+          </div>
+          <button class="primary-button" id="openUploader" type="button">
+            <span>＋</span>
+            새 정보 추가
+          </button>
+        </header>
+
+        <section class="command-row" aria-label="검색 및 필터">
+          <label class="search-box">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="예: 이번 달 마감인 공모전 보여줘" />
+          </label>
+          <div class="segmented" aria-label="카테고리 필터">
+            <button class="filter-chip active" data-filter="all" type="button">전체</button>
+            <button class="filter-chip" data-filter="학교" type="button">학교</button>
+            <button class="filter-chip" data-filter="지원" type="button">지원</button>
+            <button class="filter-chip" data-filter="정산" type="button">정산</button>
+            <button class="filter-chip" data-filter="장소" type="button">장소</button>
+          </div>
+        </section>
+
+        <section class="insight-strip" aria-label="요약">
+          <article>
+            <span class="stat-label">곧 마감</span>
+            <strong>2</strong>
+            <p>오늘 확인하면 좋은 카드</p>
+          </article>
+          <article>
+            <span class="stat-label">AI 분석 완료</span>
+            <strong>18</strong>
+            <p>캡처·링크·메모에서 추출</p>
+          </article>
+          <article>
+            <span class="stat-label">민감 정보 감지</span>
+            <strong>3</strong>
+            <p>목록에서는 자동 마스킹</p>
+          </article>
+        </section>
+
+        <div class="content-grid">
+          <section class="card-board" aria-label="정보 카드 목록">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">AI 정보 카드</p>
+                <h2>오늘 다시 볼 것</h2>
+              </div>
+              <button class="ghost-button" type="button">정렬: 마감순</button>
+            </div>
+
+            <div class="card-list" id="cardList"></div>
+          </section>
+
+          <aside class="detail-pane" aria-label="선택한 정보 카드 상세">
+            <div class="detail-visual" id="detailVisual">
+              <span>캡처</span>
+            </div>
+
+            <div class="detail-header">
+              <span class="category-pill" id="detailCategory">학교</span>
+              <button class="icon-button" type="button" title="중요 표시">☆</button>
+            </div>
+
+            <h2 id="detailTitle">2026학년도 1학기 장학금 신청 안내</h2>
+            <p id="detailSummary">AI가 추출한 핵심 정보를 카드로 정리했어요.</p>
+
+            <dl class="info-list">
+              <div>
+                <dt>마감일</dt>
+                <dd id="detailDue">5월 15일</dd>
+              </div>
+              <div>
+                <dt>장소</dt>
+                <dd id="detailPlace">학생지원팀</dd>
+              </div>
+              <div>
+                <dt>알림</dt>
+                <dd id="detailReminder">마감 3일 전</dd>
+              </div>
+            </dl>
+
+            <div class="task-panel">
+              <div class="section-heading compact">
+                <h3>해야 할 일</h3>
+                <button class="text-button" type="button">수정</button>
+              </div>
+              <ol id="detailTasks"></ol>
+            </div>
+
+            <div class="privacy-panel">
+              <strong>민감 정보</strong>
+              <p id="detailPrivacy">감지된 민감 정보 없음</p>
+            </div>
+
+            <div class="action-row">
+              <button class="secondary-button" type="button">나중에 보기</button>
+              <button class="primary-button wide" type="button">완료 처리</button>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <div class="uploader" id="uploader" aria-hidden="true">
+      <div class="uploader-panel" role="dialog" aria-modal="true" aria-labelledby="uploaderTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">직접 추가</p>
+            <h2 id="uploaderTitle">분석할 정보 선택</h2>
+          </div>
+          <button class="icon-button" id="closeUploader" type="button" title="닫기">×</button>
+        </div>
+
+        <div class="upload-options">
+          <button type="button">
+            <span>▧</span>
+            캡처·사진
+          </button>
+          <button type="button">
+            <span>🔗</span>
+            웹 링크
+          </button>
+          <button type="button">
+            <span>✎</span>
+            짧은 메모
+          </button>
+          <button type="button">
+            <span>□</span>
+            파일
+          </button>
+        </div>
+
+        <label class="memo-field">
+          <span>메모 또는 링크 붙여넣기</span>
+          <textarea placeholder="예: AI 아이디어톤 신청 링크, 이번 주 금요일 마감"></textarea>
+        </label>
+
+        <label class="toggle-row">
+          <input type="checkbox" checked />
+          원본 이미지도 함께 저장
+        </label>
+
+        <button class="primary-button wide" type="button">AI 분석 시작</button>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
