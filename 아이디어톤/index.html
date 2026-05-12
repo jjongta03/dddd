@@ -10,27 +10,34 @@
     <div class="phone-shell">
       <main class="app" aria-live="polite">
         <section class="screen active" id="homeScreen" data-screen="home">
-          <header class="home-header">
-            <div>
-              <p class="caption">안녕하세요! </p>
-              <h1>저장한 정보를 놓치지 않게</h1>
+          <section class="profile-card" aria-label="프로필 요약">
+            <div class="profile-top">
+              <img
+                class="profile-photo"
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80"
+                alt="Elsa 프로필"
+              />
+              <div class="profile-copy">
+                <strong>Elsa</strong>
+                <span>elsa.remind@example.com</span>
+              </div>
+              <button class="settings-button" type="button" aria-label="설정">⚙</button>
             </div>
-            <button class="avatar-button" type="button" aria-label="프로필">사</button>
-          </header>
 
-          <section class="stats-grid" aria-label="저장 통계">
-            <article>
-              <span>누적 저장</span>
-              <strong>24</strong>
-            </article>
-            <article>
-              <span>완료</span>
-              <strong>8</strong>
-            </article>
-            <article>
-              <span>카테고리</span>
-              <strong>5</strong>
-            </article>
+            <div class="profile-stats" aria-label="저장 통계">
+              <article>
+                <strong>1,208</strong>
+                <span>저장한 정보</span>
+              </article>
+              <article>
+                <strong>726</strong>
+                <span>완료된 일정</span>
+              </article>
+              <article>
+                <strong>8</strong>
+                <span>카테고리</span>
+              </article>
+            </div>
           </section>
 
           <nav class="category-tabs" aria-label="카테고리">
@@ -43,6 +50,11 @@
 
           <section class="card-list" id="cardList" aria-label="정보 카드 목록"></section>
 
+          <nav class="bottom-nav" aria-label="하단 네비게이션">
+            <button class="active" type="button"><span>⌂</span>홈</button>
+            <button type="button"><span>▣</span>카드</button>
+            <button type="button"><span>◷</span>알림</button>
+            <button type="button"><span>☻</span>내 정보</button>
           </nav>
 
           <button class="fab" id="openAddSheet" type="button" aria-label="새 정보 추가">+</button>
