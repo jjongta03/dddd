@@ -135,6 +135,7 @@ const screenMap = {
 };
 
 const cardList = document.querySelector("#cardList");
+const cardSearch = document.querySelector("#cardSearch");
 const tabButtons = document.querySelectorAll("#homeScreen .tab-button");
 const archiveList = document.querySelector("#archiveList");
 const archiveTabButtons = document.querySelectorAll(".archive-tab");
@@ -151,6 +152,7 @@ const confirmPermanentDelete = document.querySelector("#confirmPermanentDelete")
 let cards = loadCards();
 let selectedCard = cards[0];
 let selectedFilter = "all";
+let searchQuery = "";
 let selectedArchiveFilter = "all";
 let editingCardId = null;
 let pendingPermanentDeleteId = null;
@@ -272,6 +274,20 @@ function formatDate(value) {
   return value ? value.replaceAll("-", ".") : "마감일 미정";
 }
 
+function getCardSearchText(card) {
+  return [
+    card.title,
+    card.category,
+    card.summary,
+    card.tags.join(" "),
+    card.due,
+    formatDate(card.due),
+    card.status,
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -294,10 +310,23 @@ function showScreen(name) {
 
 function renderCards() {
   const activeCards = getActiveCards();
-  const filteredCards =
+  const categoryFilteredCards =
     selectedFilter === "all"
       ? activeCards
       : activeCards.filter((card) => card.category === selectedFilter);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredCards = normalizedQuery
+    ? categoryFilteredCards.filter((card) => getCardSearchText(card).includes(normalizedQuery))
+    : categoryFilteredCards;
+
+  const emptyMessage = normalizedQuery
+    ? `
+      <p class="empty-text">
+        <strong class="empty-title">검색 결과가 없어요.</strong>
+        <span class="empty-subtitle">다른 키워드로 다시 검색해보세요.</span>
+      </p>
+    `
+    : `<p class="empty-text">이 카테고리에 저장된 카드가 없습니다.</p>`;
 
   cardList.innerHTML = filteredCards.length
     ? filteredCards
@@ -324,7 +353,7 @@ function renderCards() {
           `,
         )
         .join("")
-    : `<p class="empty-text">이 카테고리에 저장된 카드가 없습니다.</p>`;
+    : emptyMessage;
 }
 
 function renderArchiveCards() {
@@ -557,6 +586,11 @@ tabButtons.forEach((button) => {
     button.classList.add("active");
     renderCards();
   });
+});
+
+cardSearch.addEventListener("input", (event) => {
+  searchQuery = event.target.value;
+  renderCards();
 });
 
 document.querySelectorAll("[data-go]").forEach((button) => {
