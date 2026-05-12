@@ -3,194 +3,246 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>리콜릿 | AI 정보 카드 저장함</title>
+    <title>리콜릿 | 리마인드 앱</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="app-shell">
-      <aside class="sidebar" aria-label="주요 메뉴">
-        <div class="brand">
-          <div class="brand-mark">R</div>
-          <div>
-            <strong>리콜릿</strong>
-            <span>AI 정보 카드 저장함</span>
-          </div>
-        </div>
-
-        <nav class="nav-list">
-          <button class="nav-item active" type="button">
-            <span>⌂</span>
-            오늘
-          </button>
-          <button class="nav-item" type="button">
-            <span>▦</span>
-            모든 카드
-          </button>
-          <button class="nav-item" type="button">
-            <span>⏱</span>
-            리마인드
-          </button>
-          <button class="nav-item" type="button">
-            <span>🔒</span>
-            민감 정보
-          </button>
-        </nav>
-
-        <div class="sidebar-panel">
-          <p>이번 주 예정</p>
-          <strong>5개</strong>
-          <span>마감 3일 이내 카드 2개</span>
-        </div>
-      </aside>
-
-      <main class="workspace">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">2026년 5월 11일 월요일</p>
-            <h1>저장한 정보를 다시 행동으로</h1>
-          </div>
-          <button class="primary-button" id="openUploader" type="button">
-            <span>＋</span>
-            새 정보 추가
-          </button>
-        </header>
-
-        <section class="command-row" aria-label="검색 및 필터">
-          <label class="search-box">
-            <span>⌕</span>
-            <input id="searchInput" type="search" placeholder="예: 이번 달 마감인 공모전 보여줘" />
-          </label>
-          <div class="segmented" aria-label="카테고리 필터">
-            <button class="filter-chip active" data-filter="all" type="button">전체</button>
-            <button class="filter-chip" data-filter="학교" type="button">학교</button>
-            <button class="filter-chip" data-filter="지원" type="button">지원</button>
-            <button class="filter-chip" data-filter="정산" type="button">정산</button>
-            <button class="filter-chip" data-filter="장소" type="button">장소</button>
-          </div>
-        </section>
-
-        <section class="insight-strip" aria-label="요약">
-          <article>
-            <span class="stat-label">곧 마감</span>
-            <strong>2</strong>
-            <p>오늘 확인하면 좋은 카드</p>
-          </article>
-          <article>
-            <span class="stat-label">AI 분석 완료</span>
-            <strong>18</strong>
-            <p>캡처·링크·메모에서 추출</p>
-          </article>
-          <article>
-            <span class="stat-label">민감 정보 감지</span>
-            <strong>3</strong>
-            <p>목록에서는 자동 마스킹</p>
-          </article>
-        </section>
-
-        <div class="content-grid">
-          <section class="card-board" aria-label="정보 카드 목록">
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">AI 정보 카드</p>
-                <h2>오늘 다시 볼 것</h2>
-              </div>
-              <button class="ghost-button" type="button">정렬: 마감순</button>
+    <div class="phone-shell">
+      <main class="app" aria-live="polite">
+        <section class="screen active" id="homeScreen" data-screen="home">
+          <header class="home-header">
+            <div>
+              <p class="caption">안녕하세요, 윤지님</p>
+              <h1>저장한 정보를 놓치지 않게</h1>
             </div>
+            <button class="avatar-button" type="button" aria-label="프로필">윤</button>
+          </header>
 
-            <div class="card-list" id="cardList"></div>
+          <section class="stats-grid" aria-label="저장 통계">
+            <article>
+              <span>누적 저장</span>
+              <strong>24</strong>
+            </article>
+            <article>
+              <span>완료</span>
+              <strong>8</strong>
+            </article>
+            <article>
+              <span>카테고리</span>
+              <strong>5</strong>
+            </article>
           </section>
 
-          <aside class="detail-pane" aria-label="선택한 정보 카드 상세">
-            <div class="detail-visual" id="detailVisual">
-              <span>캡처</span>
-            </div>
+          <nav class="category-tabs" aria-label="카테고리">
+            <button class="tab-button active" data-filter="all" type="button">전체</button>
+            <button class="tab-button" data-filter="학교" type="button">학교</button>
+            <button class="tab-button" data-filter="대외활동" type="button">대외활동</button>
+            <button class="tab-button" data-filter="개인 일정" type="button">개인 일정</button>
+            <button class="tab-button" data-filter="기타" type="button">기타</button>
+          </nav>
 
-            <div class="detail-header">
-              <span class="category-pill" id="detailCategory">학교</span>
-              <button class="icon-button" type="button" title="중요 표시">☆</button>
-            </div>
+          <section class="card-list" id="cardList" aria-label="정보 카드 목록"></section>
 
+          <nav class="bottom-nav" aria-label="하단 네비게이션">
+            <button class="active" type="button"><span>⌂</span>홈</button>
+            <button type="button"><span>▣</span>카드</button>
+            <button type="button"><span>◷</span>알림</button>
+            <button type="button"><span>☻</span>내 정보</button>
+          </nav>
+
+          <button class="fab" id="openAddSheet" type="button" aria-label="새 정보 추가">+</button>
+        </section>
+
+        <section class="screen" id="detailScreen" data-screen="detail">
+          <header class="screen-header">
+            <button class="icon-button" data-go="home" type="button" aria-label="뒤로가기">‹</button>
+            <button class="icon-button" data-go="home" type="button" aria-label="홈">⌂</button>
+          </header>
+
+          <div class="detail-hero">
+            <span class="pill" id="detailCategory">학교</span>
             <h2 id="detailTitle">2026학년도 1학기 장학금 신청 안내</h2>
-            <p id="detailSummary">AI가 추출한 핵심 정보를 카드로 정리했어요.</p>
+            <p id="detailSummary">신청 기간과 제출 서류가 포함된 학교 공지 캡처입니다.</p>
+          </div>
 
-            <dl class="info-list">
-              <div>
-                <dt>마감일</dt>
-                <dd id="detailDue">5월 15일</dd>
-              </div>
-              <div>
-                <dt>장소</dt>
-                <dd id="detailPlace">학생지원팀</dd>
-              </div>
-              <div>
-                <dt>알림</dt>
-                <dd id="detailReminder">마감 3일 전</dd>
-              </div>
-            </dl>
-
-            <div class="task-panel">
-              <div class="section-heading compact">
-                <h3>해야 할 일</h3>
-                <button class="text-button" type="button">수정</button>
-              </div>
-              <ol id="detailTasks"></ol>
+          <section class="info-panel">
+            <div class="info-row">
+              <span>신청 마감일</span>
+              <strong id="detailDue">2026.05.15</strong>
             </div>
-
-            <div class="privacy-panel">
-              <strong>민감 정보</strong>
-              <p id="detailPrivacy">감지된 민감 정보 없음</p>
+            <div class="tag-row" id="detailTags"></div>
+            <div class="progress-block">
+              <div>
+                <span>진행률</span>
+                <strong id="detailProgressLabel">60%</strong>
+              </div>
+              <div class="progress-track"><span id="detailProgressBar"></span></div>
             </div>
+          </section>
 
-            <div class="action-row">
-              <button class="secondary-button" type="button">나중에 보기</button>
-              <button class="primary-button wide" type="button">완료 처리</button>
+          <button class="reminder-card" id="openReminder" type="button">
+            <div>
+              <span>알림 ON/OFF</span>
+              <strong>마감 전에 알려드릴게요</strong>
             </div>
-          </aside>
-        </div>
+            <span class="switch is-on" aria-hidden="true"></span>
+          </button>
+
+          <p class="guide-text" id="detailReminder">마감 3일 전 오전 9시에 리마인드 예정</p>
+
+          <div class="detail-actions">
+            <button class="primary-button" id="openOriginal" type="button">원본 확인</button>
+            <button class="secondary-button" type="button">내용 수정</button>
+            <button class="danger-button" type="button">삭제</button>
+          </div>
+        </section>
+
+        <section class="screen" id="originalScreen" data-screen="original">
+          <header class="screen-header">
+            <button class="icon-button" data-go="detail" type="button" aria-label="뒤로가기">‹</button>
+            <button class="icon-button" data-go="home" type="button" aria-label="홈">⌂</button>
+          </header>
+
+          <article class="source-summary">
+            <span class="pill" id="sourceCategory">학교</span>
+            <h2 id="sourceTitle">원본 자료</h2>
+            <p id="sourceSummary">저장한 캡처와 요약을 함께 확인합니다.</p>
+          </article>
+
+          <section class="source-image" id="sourceImage" aria-label="원본 이미지 영역">
+            <div>
+              <span>원본 캡처</span>
+              <strong id="sourceDue">마감일 2026.05.15</strong>
+            </div>
+          </section>
+
+          <article class="long-note">
+            <h3>자료 메모</h3>
+            <p>
+              원본 이미지 확대 기능은 다음 단계에서 연결할 수 있도록 영역만 먼저 준비했습니다.
+              현재는 스크롤 가능한 자료 보기 화면과 상세 화면 복귀 흐름을 확인할 수 있습니다.
+            </p>
+          </article>
+        </section>
+
+        <section class="screen" id="reminderScreen" data-screen="reminder">
+          <header class="screen-header">
+            <button class="icon-button" data-go="detail" type="button" aria-label="뒤로가기">‹</button>
+            <button class="icon-button" data-go="home" type="button" aria-label="홈">⌂</button>
+          </header>
+
+          <h2 class="screen-title">알림 설정</h2>
+          <div class="menu-list">
+            <button class="menu-item" data-go="deadline" type="button">
+              <span>기준일 기반</span>
+              <strong>마감일 기준으로 받기</strong>
+            </button>
+            <button class="menu-item" data-go="repeat" type="button">
+              <span>반복 알림</span>
+              <strong>일정 주기로 계속 받기</strong>
+            </button>
+            <button class="menu-item" data-go="custom" type="button">
+              <span>직접 설정</span>
+              <strong>날짜와 시간을 직접 선택</strong>
+            </button>
+          </div>
+          <button class="primary-button sticky-action" data-go="detail" type="button">저장하기</button>
+        </section>
+
+        <section class="screen" id="deadlineScreen" data-screen="deadline">
+          <header class="screen-header">
+            <button class="icon-button" data-go="reminder" type="button" aria-label="뒤로가기">‹</button>
+            <button class="icon-button" data-go="home" type="button" aria-label="홈">⌂</button>
+          </header>
+
+          <h2 class="screen-title">기준일 기반 설정</h2>
+          <section class="info-panel">
+            <div class="info-row">
+              <span>기준일</span>
+              <strong id="deadlineBase">2026.05.15</strong>
+            </div>
+            <label class="field-label">
+              알림 시점 선택
+              <select>
+                <option>당일</option>
+                <option selected>1일 전</option>
+                <option>3일 전</option>
+                <option>7일 전</option>
+              </select>
+            </label>
+          </section>
+          <button class="primary-button sticky-action" data-go="detail" type="button">확인</button>
+        </section>
+
+        <section class="screen" id="repeatScreen" data-screen="repeat">
+          <header class="screen-header">
+            <button class="icon-button" data-go="reminder" type="button" aria-label="뒤로가기">‹</button>
+            <button class="icon-button" data-go="home" type="button" aria-label="홈">⌂</button>
+          </header>
+
+          <h2 class="screen-title">반복 알림 설정</h2>
+          <fieldset class="radio-list">
+            <legend>반복 주기 선택</legend>
+            <label><input type="radio" name="repeat" checked /> 매일</label>
+            <label><input type="radio" name="repeat" /> 매주</label>
+            <label><input type="radio" name="repeat" /> 매월</label>
+            <label><input type="radio" name="repeat" /> 사용자 지정</label>
+          </fieldset>
+          <button class="primary-button sticky-action" data-go="detail" type="button">확인</button>
+        </section>
+
+        <section class="screen" id="customScreen" data-screen="custom">
+          <header class="screen-header">
+            <button class="icon-button" data-go="reminder" type="button" aria-label="뒤로가기">‹</button>
+            <button class="icon-button" data-go="home" type="button" aria-label="홈">⌂</button>
+          </header>
+
+          <h2 class="screen-title">직접 알림 설정</h2>
+          <section class="info-panel">
+            <label class="field-label">
+              날짜
+              <input type="date" value="2026-05-14" />
+            </label>
+            <label class="field-label">
+              시간
+              <input type="time" value="09:00" />
+            </label>
+          </section>
+          <button class="primary-button sticky-action" data-go="detail" type="button">확인</button>
+        </section>
       </main>
     </div>
 
-    <div class="uploader" id="uploader" aria-hidden="true">
-      <div class="uploader-panel" role="dialog" aria-modal="true" aria-labelledby="uploaderTitle">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">직접 추가</p>
-            <h2 id="uploaderTitle">분석할 정보 선택</h2>
-          </div>
-          <button class="icon-button" id="closeUploader" type="button" title="닫기">×</button>
+    <div class="sheet-backdrop" id="checklistSheet" aria-hidden="true">
+      <section class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="checklistTitle">
+        <div class="sheet-handle"></div>
+        <div class="sheet-head">
+          <h2 id="checklistTitle">체크리스트</h2>
+          <button class="icon-button close-sheet" type="button" aria-label="닫기">×</button>
         </div>
+        <ul class="checklist">
+          <li>신청서 작성</li>
+          <li>성적 증명서 준비</li>
+          <li>오늘 작성</li>
+          <li>제출하기</li>
+        </ul>
+      </section>
+    </div>
 
-        <div class="upload-options">
-          <button type="button">
-            <span>▧</span>
-            캡처·사진
-          </button>
-          <button type="button">
-            <span>🔗</span>
-            웹 링크
-          </button>
-          <button type="button">
-            <span>✎</span>
-            짧은 메모
-          </button>
-          <button type="button">
-            <span>□</span>
-            파일
-          </button>
+    <div class="sheet-backdrop" id="addSheet" aria-hidden="true">
+      <section class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="addTitle">
+        <div class="sheet-handle"></div>
+        <div class="sheet-head">
+          <h2 id="addTitle">새 정보 추가</h2>
+          <button class="icon-button close-sheet" type="button" aria-label="닫기">×</button>
         </div>
-
-        <label class="memo-field">
-          <span>메모 또는 링크 붙여넣기</span>
-          <textarea placeholder="예: AI 아이디어톤 신청 링크, 이번 주 금요일 마감"></textarea>
-        </label>
-
-        <label class="toggle-row">
-          <input type="checkbox" checked />
-          원본 이미지도 함께 저장
-        </label>
-
-        <button class="primary-button wide" type="button">AI 분석 시작</button>
-      </div>
+        <div class="quick-add-grid">
+          <button type="button">캡처</button>
+          <button type="button">링크</button>
+          <button type="button">메모</button>
+          <button type="button">파일</button>
+        </div>
+      </section>
     </div>
 
     <script src="./script.js"></script>

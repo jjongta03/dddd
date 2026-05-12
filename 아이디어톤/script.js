@@ -1,170 +1,188 @@
 const cards = [
   {
     id: 1,
-    type: "school",
-    icon: "학",
     title: "2026학년도 1학기 장학금 신청 안내",
     category: "학교",
-    tags: ["장학금", "신청", "서류"],
-    due: "5월 15일",
-    dueLabel: "D-4",
-    place: "학생지원팀",
-    reminder: "마감 3일 전",
+    due: "2026.05.15",
+    status: "진행중",
+    progress: 60,
     summary: "신청 기간과 제출 서류가 포함된 학교 공지 캡처입니다.",
-    tasks: ["신청서 작성", "성적증명서 준비", "5월 15일까지 제출"],
-    privacy: "학번 후보가 감지되어 목록에서는 일부 마스킹돼요.",
-    visual: "linear-gradient(160deg, #2f8f72, #203d55 75%)",
+    tags: ["장학금", "신청", "서류"],
+    reminder: "마감 3일 전 오전 9시에 리마인드 예정",
+    visual: "linear-gradient(160deg, #2d8b72, #24394d 78%)",
   },
   {
     id: 2,
-    type: "support",
-    icon: "공",
     title: "AI 아이디어톤 참가 신청 링크",
-    category: "지원",
-    tags: ["공모전", "대외활동", "마감"],
-    due: "5월 17일",
-    dueLabel: "이번 주",
-    place: "온라인 접수",
-    reminder: "마감 하루 전",
+    category: "대외활동",
+    due: "2026.05.17",
+    status: "D-5",
+    progress: 35,
     summary: "팀명, 신청서, 기획안 PDF를 준비해야 하는 참가 신청 링크입니다.",
-    tasks: ["팀원 정보 확인", "기획안 PDF 첨부", "온라인 신청서 제출"],
-    privacy: "전화번호 후보가 감지되어 알림에는 표시하지 않아요.",
-    visual: "linear-gradient(160deg, #2f6fd6, #4c315f 78%)",
+    tags: ["공모전", "팀빌딩", "기획안"],
+    reminder: "마감 하루 전 오후 6시에 리마인드 예정",
+    visual: "linear-gradient(160deg, #386fd0, #4b355f 78%)",
   },
   {
     id: 3,
-    type: "money",
-    icon: "정",
-    title: "동아리 회비 입금 계좌 메모",
-    category: "정산",
-    tags: ["계좌", "회비", "입금"],
-    due: "5월 20일",
-    dueLabel: "D-9",
-    place: "카카오뱅크",
-    reminder: "마감 2일 전",
-    summary: "회비 금액과 입금 계좌가 적힌 메모입니다.",
-    tasks: ["회비 30,000원 입금", "입금자명 확인", "완료 후 단톡방에 공유"],
-    privacy: "계좌번호가 감지되어 기본 화면에는 3333-**-****로 표시돼요.",
-    visual: "linear-gradient(160deg, #d58b27, #51633d 78%)",
+    title: "동아리 회의 및 회비 입금 메모",
+    category: "개인 일정",
+    due: "2026.05.20",
+    status: "확인 필요",
+    progress: 20,
+    summary: "회의 시간, 회비 금액, 입금 계좌를 함께 저장한 메모입니다.",
+    tags: ["회의", "회비", "입금"],
+    reminder: "일정 당일 오전 8시에 리마인드 예정",
+    visual: "linear-gradient(160deg, #d9942f, #465f44 78%)",
   },
   {
     id: 4,
-    type: "place",
-    icon: "맛",
     title: "성수 근처 저장한 맛집 캡처",
-    category: "장소",
-    tags: ["맛집", "성수", "약속"],
-    due: "일정 근처",
-    dueLabel: "상황 알림",
-    place: "서울 성동구 성수동",
-    reminder: "성수 일정 당일 오전",
-    summary: "성수 방문 일정이 있을 때 다시 꺼내보기 좋은 맛집 캡처입니다.",
-    tasks: ["예약 가능 여부 확인", "약속 장소와 거리 확인", "후보로 공유"],
-    privacy: "감지된 민감 정보 없음",
-    visual: "linear-gradient(160deg, #c65367, #33576f 78%)",
+    category: "기타",
+    due: "2026.05.28",
+    status: "보관중",
+    progress: 10,
+    summary: "성수 방문 일정이 있을 때 다시 꺼내보기 좋은 장소 캡처입니다.",
+    tags: ["장소", "약속", "후보"],
+    reminder: "성수 일정 등록 시 당일 오전에 리마인드 예정",
+    visual: "linear-gradient(160deg, #cb5b72, #33576f 78%)",
   },
 ];
 
-const cardList = document.querySelector("#cardList");
-const searchInput = document.querySelector("#searchInput");
-const filterButtons = document.querySelectorAll(".filter-chip");
-const uploader = document.querySelector("#uploader");
-const openUploader = document.querySelector("#openUploader");
-const closeUploader = document.querySelector("#closeUploader");
+const screenMap = {
+  home: document.querySelector("#homeScreen"),
+  detail: document.querySelector("#detailScreen"),
+  original: document.querySelector("#originalScreen"),
+  reminder: document.querySelector("#reminderScreen"),
+  deadline: document.querySelector("#deadlineScreen"),
+  repeat: document.querySelector("#repeatScreen"),
+  custom: document.querySelector("#customScreen"),
+};
 
-let selectedId = cards[0].id;
+const cardList = document.querySelector("#cardList");
+const tabButtons = document.querySelectorAll(".tab-button");
+const checklistSheet = document.querySelector("#checklistSheet");
+const addSheet = document.querySelector("#addSheet");
+const openAddSheet = document.querySelector("#openAddSheet");
+
+let selectedCard = cards[0];
 let selectedFilter = "all";
 
-function renderCards() {
-  const query = searchInput.value.trim().toLowerCase();
-  const filteredCards = cards.filter((card) => {
-    const text = [card.title, card.category, card.tags.join(" "), card.summary, card.place]
-      .join(" ")
-      .toLowerCase();
-    const matchesQuery = !query || text.includes(query);
-    const matchesFilter = selectedFilter === "all" || card.category === selectedFilter;
-    return matchesQuery && matchesFilter;
-  });
-
-  cardList.innerHTML = "";
-
-  if (filteredCards.length === 0) {
-    cardList.innerHTML = '<p class="empty-state">검색 결과가 없어요. 다른 표현으로 찾아보세요.</p>';
-    return;
-  }
-
-  filteredCards.forEach((card) => {
-    const button = document.createElement("button");
-    button.className = `info-card ${card.id === selectedId ? "active" : ""}`;
-    button.type = "button";
-    button.innerHTML = `
-      <div class="thumb ${card.type}">${card.icon}</div>
-      <div class="card-body">
-        <span class="card-title">${card.title}</span>
-        <div class="card-meta">
-          <span>${card.category}</span>
-          <span>${card.due}</span>
-          <span>${card.place}</span>
-        </div>
-        <div class="tag-row">
-          ${card.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
-        </div>
-      </div>
-      <div class="due-badge">${card.dueLabel}</div>
-    `;
-    button.addEventListener("click", () => selectCard(card.id));
-    cardList.appendChild(button);
-  });
+function showScreen(name) {
+  Object.values(screenMap).forEach((screen) => screen.classList.remove("active"));
+  screenMap[name].classList.add("active");
+  screenMap[name].scrollTop = 0;
 }
 
-function selectCard(id) {
-  selectedId = id;
-  const card = cards.find((item) => item.id === id);
+function renderCards() {
+  const filteredCards =
+    selectedFilter === "all"
+      ? cards
+      : cards.filter((card) => card.category === selectedFilter);
 
+  cardList.innerHTML = filteredCards
+    .map(
+      (card) => `
+        <article class="info-card" data-card-id="${card.id}">
+          <div class="card-top">
+            <div class="card-main">
+              <span class="pill">${card.category}</span>
+              <button class="card-open" type="button">
+                <span class="card-title">${card.title}</span>
+                <span class="card-meta">마감일 ${card.due}</span>
+              </button>
+            </div>
+            <button class="more-button" data-more-id="${card.id}" type="button" aria-label="더보기">⋯</button>
+          </div>
+          <div class="card-footer">
+            <div class="mini-progress" aria-label="진행률 ${card.progress}%">
+              <span style="width: ${card.progress}%"></span>
+            </div>
+            <span class="status-pill">${card.status}</span>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function updateDetail(card) {
+  selectedCard = card;
   document.querySelector("#detailCategory").textContent = card.category;
   document.querySelector("#detailTitle").textContent = card.title;
   document.querySelector("#detailSummary").textContent = card.summary;
   document.querySelector("#detailDue").textContent = card.due;
-  document.querySelector("#detailPlace").textContent = card.place;
+  document.querySelector("#detailProgressLabel").textContent = `${card.progress}%`;
+  document.querySelector("#detailProgressBar").style.width = `${card.progress}%`;
   document.querySelector("#detailReminder").textContent = card.reminder;
-  document.querySelector("#detailPrivacy").textContent = card.privacy;
-  document.querySelector("#detailVisual").style.background = `
-    linear-gradient(145deg, rgba(255, 255, 255, 0.26), transparent 36%),
-    ${card.visual}
-  `;
-  document.querySelector("#detailTasks").innerHTML = card.tasks
-    .map((task) => `<li>${task}</li>`)
+  document.querySelector("#detailTags").innerHTML = card.tags
+    .map((tag) => `<span class="tag">#${tag}</span>`)
     .join("");
 
-  renderCards();
+  document.querySelector("#sourceCategory").textContent = card.category;
+  document.querySelector("#sourceTitle").textContent = card.title;
+  document.querySelector("#sourceSummary").textContent = card.summary;
+  document.querySelector("#sourceDue").textContent = `마감일 ${card.due}`;
+  document.querySelector("#sourceImage").style.background = `
+    linear-gradient(145deg, rgba(255, 255, 255, 0.28), transparent 34%),
+    ${card.visual}
+  `;
+  document.querySelector("#deadlineBase").textContent = card.due;
 }
 
-filterButtons.forEach((button) => {
+function openSheet(sheet) {
+  sheet.classList.add("open");
+  sheet.setAttribute("aria-hidden", "false");
+}
+
+function closeSheet(sheet) {
+  sheet.classList.remove("open");
+  sheet.setAttribute("aria-hidden", "true");
+}
+
+cardList.addEventListener("click", (event) => {
+  const cardButton = event.target.closest("[data-card-id]");
+  const moreButton = event.target.closest("[data-more-id]");
+
+  if (moreButton) {
+    event.stopPropagation();
+    selectedCard = cards.find((card) => card.id === Number(moreButton.dataset.moreId));
+    openSheet(checklistSheet);
+    return;
+  }
+
+  if (cardButton) {
+    const card = cards.find((item) => item.id === Number(cardButton.dataset.cardId));
+    updateDetail(card);
+    showScreen("detail");
+  }
+});
+
+tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectedFilter = button.dataset.filter;
-    filterButtons.forEach((item) => item.classList.remove("active"));
+    tabButtons.forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
     renderCards();
   });
 });
 
-searchInput.addEventListener("input", renderCards);
-
-openUploader.addEventListener("click", () => {
-  uploader.classList.add("open");
-  uploader.setAttribute("aria-hidden", "false");
+document.querySelectorAll("[data-go]").forEach((button) => {
+  button.addEventListener("click", () => showScreen(button.dataset.go));
 });
 
-closeUploader.addEventListener("click", () => {
-  uploader.classList.remove("open");
-  uploader.setAttribute("aria-hidden", "true");
+document.querySelector("#openReminder").addEventListener("click", () => showScreen("reminder"));
+document.querySelector("#openOriginal").addEventListener("click", () => showScreen("original"));
+
+openAddSheet.addEventListener("click", () => openSheet(addSheet));
+
+document.querySelectorAll(".sheet-backdrop").forEach((sheet) => {
+  sheet.addEventListener("click", (event) => {
+    if (event.target === sheet || event.target.closest(".close-sheet")) {
+      closeSheet(sheet);
+    }
+  });
 });
 
-uploader.addEventListener("click", (event) => {
-  if (event.target === uploader) {
-    uploader.classList.remove("open");
-    uploader.setAttribute("aria-hidden", "true");
-  }
-});
-
-selectCard(selectedId);
+renderCards();
+updateDetail(selectedCard);
