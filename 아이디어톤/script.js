@@ -127,6 +127,7 @@ const screenMap = {
   home: document.querySelector("#homeScreen"),
   detail: document.querySelector("#detailScreen"),
   original: document.querySelector("#originalScreen"),
+  archive: document.querySelector("#archiveScreen"),
   reminder: document.querySelector("#reminderScreen"),
   deadline: document.querySelector("#deadlineScreen"),
   repeat: document.querySelector("#repeatScreen"),
@@ -134,18 +135,25 @@ const screenMap = {
 };
 
 const cardList = document.querySelector("#cardList");
-const tabButtons = document.querySelectorAll(".tab-button");
+const tabButtons = document.querySelectorAll("#homeScreen .tab-button");
+const archiveList = document.querySelector("#archiveList");
+const archiveTabButtons = document.querySelectorAll(".archive-tab");
 const checklistSheet = document.querySelector("#checklistSheet");
 const sheetChecklist = document.querySelector("#sheetChecklist");
 const addSheet = document.querySelector("#addSheet");
 const openAddSheet = document.querySelector("#openAddSheet");
 const cardForm = document.querySelector("#cardForm");
 const addTitle = document.querySelector("#addTitle");
+const permanentDeleteDialog = document.querySelector("#permanentDeleteDialog");
+const cancelPermanentDelete = document.querySelector("#cancelPermanentDelete");
+const confirmPermanentDelete = document.querySelector("#confirmPermanentDelete");
 
 let cards = loadCards();
 let selectedCard = cards[0];
 let selectedFilter = "all";
+let selectedArchiveFilter = "all";
 let editingCardId = null;
+let pendingPermanentDeleteId = null;
 
 function loadCards() {
   try {
@@ -202,6 +210,10 @@ function normalizeCard(card) {
       value: "",
     },
     visual: card.visual || "linear-gradient(160deg, #2d8b72, #24394d 78%)",
+    archiveType: card.archiveType || "",
+    archivedAt: card.archivedAt || "",
+    previousStatus: card.previousStatus || "",
+    restoredAt: card.restoredAt || "",
   };
 
   return syncCardProgress(normalized);
@@ -212,9 +224,43 @@ function syncCardProgress(card) {
   const checked = card.checklist.filter((item) => item.checked).length;
 
   card.progress = total === 0 ? 0 : Math.round((checked / total) * 100);
-  card.status = total > 0 && checked === total ? "완료" : "진행중";
+  card.status = total > 0 && checked === total && !card.restoredAt ? "완료" : "진행중";
 
   return card;
+}
+
+function getTodayInput() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getArchiveType(card) {
+  if (card.archiveType) return card.archiveType;
+  if (card.restoredAt) return "";
+  if (card.status === "완료") return "completed";
+  if (card.due && card.due < getTodayInput()) return "overdue";
+  return "";
+}
+
+function getArchiveLabel(type) {
+  return {
+    deleted: "삭제됨",
+    overdue: "마감 지남",
+    completed: "완료됨",
+  }[type] || "보관됨";
+}
+
+function getArchivedCards() {
+  return cards
+    .filter((card) => getArchiveType(card))
+    .map((card) => ({
+      ...card,
+      archiveType: getArchiveType(card),
+      archivedAt: card.archivedAt || card.due || getTodayInput(),
+    }));
+}
+
+function getActiveCards() {
+  return cards.filter((card) => !getArchiveType(card));
 }
 
 function toInputDate(value) {
@@ -239,13 +285,19 @@ function showScreen(name) {
   Object.values(screenMap).forEach((screen) => screen.classList.remove("active"));
   screenMap[name].classList.add("active");
   screenMap[name].scrollTop = 0;
+  openAddSheet.classList.toggle("is-hidden", name !== "home");
+
+  if (name === "archive") {
+    renderArchiveCards();
+  }
 }
 
 function renderCards() {
+  const activeCards = getActiveCards();
   const filteredCards =
     selectedFilter === "all"
-      ? cards
-      : cards.filter((card) => card.category === selectedFilter);
+      ? activeCards
+      : activeCards.filter((card) => card.category === selectedFilter);
 
   cardList.innerHTML = filteredCards.length
     ? filteredCards
@@ -273,6 +325,55 @@ function renderCards() {
         )
         .join("")
     : `<p class="empty-text">이 카테고리에 저장된 카드가 없습니다.</p>`;
+}
+
+function renderArchiveCards() {
+  const archivedCards = getArchivedCards();
+  const filteredCards =
+    selectedArchiveFilter === "all"
+      ? archivedCards
+      : archivedCards.filter((card) => card.archiveType === selectedArchiveFilter);
+
+  archiveList.innerHTML = filteredCards.length
+    ? filteredCards
+        .map((card) => {
+          const archiveLabel = getArchiveLabel(card.archiveType);
+
+          return `
+            <article class="info-card archive-card" data-archive-card-id="${card.id}">
+              <div class="card-main">
+                <span class="status-pill ${card.archiveType}">${archiveLabel}</span>
+                <span class="card-title">${escapeHtml(card.title)}</span>
+              </div>
+              <div class="archive-detail-grid">
+                <div class="archive-detail-row">
+                  <span>카테고리</span>
+                  <strong>${escapeHtml(card.category)}</strong>
+                </div>
+                <div class="archive-detail-row">
+                  <span>기존 마감일</span>
+                  <strong>${formatDate(card.due)}</strong>
+                </div>
+              </div>
+              <p class="archive-summary">${escapeHtml(card.summary)}</p>
+              <div class="archive-detail-row">
+                <span>처리 날짜</span>
+                <strong>${formatDate(card.archivedAt)}</strong>
+              </div>
+              <div class="archive-actions">
+                <button class="restore-button" data-restore-id="${card.id}" type="button">복구</button>
+                <button class="permanent-delete-button" data-permanent-delete-id="${card.id}" type="button">영구 삭제</button>
+              </div>
+            </article>
+          `;
+        })
+        .join("")
+    : `
+      <div class="archive-empty">
+        <strong>보관된 항목이 없어요.</strong>
+        <span>삭제되거나 완료된 일정이 생기면 이곳에 표시됩니다.</span>
+      </div>
+    `;
 }
 
 function updateDetail(card) {
@@ -349,6 +450,7 @@ function toggleChecklistItem(cardId, itemId, checked) {
   selectedCard = card;
   saveCards();
   renderCards();
+  renderArchiveCards();
   updateDetail(card);
 
   if (checklistSheet.classList.contains("open")) {
@@ -364,6 +466,18 @@ function openSheet(sheet) {
 function closeSheet(sheet) {
   sheet.classList.remove("open");
   sheet.setAttribute("aria-hidden", "true");
+}
+
+function openPermanentDeleteDialog(cardId) {
+  pendingPermanentDeleteId = cardId;
+  permanentDeleteDialog.classList.add("open");
+  permanentDeleteDialog.setAttribute("aria-hidden", "false");
+}
+
+function closePermanentDeleteDialog() {
+  pendingPermanentDeleteId = null;
+  permanentDeleteDialog.classList.remove("open");
+  permanentDeleteDialog.setAttribute("aria-hidden", "true");
 }
 
 function resetCardForm() {
@@ -454,12 +568,22 @@ document.querySelector("#openOriginal").addEventListener("click", () => showScre
 document.querySelector("#openEditSheet").addEventListener("click", () => fillCardForm(selectedCard));
 
 document.querySelector("#deleteCard").addEventListener("click", () => {
-  if (!selectedCard || !confirm("이 카드를 삭제할까요?")) return;
+  if (!selectedCard || !confirm("이 카드를 보관함으로 이동할까요?")) return;
 
-  cards = cards.filter((card) => card.id !== selectedCard.id);
-  selectedCard = cards[0] || null;
+  cards = cards.map((card) =>
+    card.id === selectedCard.id
+      ? {
+          ...card,
+          archiveType: "deleted",
+          archivedAt: getTodayInput(),
+          previousStatus: card.status,
+        }
+      : card,
+  );
+  selectedCard = getActiveCards()[0] || null;
   saveCards();
   renderCards();
+  renderArchiveCards();
 
   if (selectedCard) {
     updateDetail(selectedCard);
@@ -508,6 +632,10 @@ cardForm.addEventListener("submit", (event) => {
     visual:
       existingCard?.visual ||
       "linear-gradient(160deg, #2d8b72, #24394d 78%)",
+    archiveType: existingCard?.archiveType || "",
+    archivedAt: existingCard?.archivedAt || "",
+    previousStatus: existingCard?.previousStatus || "",
+    restoredAt: existingCard?.restoredAt || "",
   };
 
   const nextCard = syncCardProgress(cardData);
@@ -521,9 +649,69 @@ cardForm.addEventListener("submit", (event) => {
   selectedCard = nextCard;
   saveCards();
   renderCards();
+  renderArchiveCards();
   updateDetail(nextCard);
   closeSheet(addSheet);
   showScreen("detail");
+});
+
+archiveTabButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedArchiveFilter = button.dataset.archiveFilter;
+    archiveTabButtons.forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    renderArchiveCards();
+  });
+});
+
+archiveList.addEventListener("click", (event) => {
+  const restoreButton = event.target.closest("[data-restore-id]");
+  const permanentDeleteButton = event.target.closest("[data-permanent-delete-id]");
+
+  if (restoreButton) {
+    const restoreId = Number(restoreButton.dataset.restoreId);
+
+    cards = cards.map((card) =>
+      card.id === restoreId
+      ? {
+          ...card,
+          archiveType: "",
+          archivedAt: "",
+          status: card.previousStatus || "진행중",
+          previousStatus: "",
+          restoredAt: getTodayInput(),
+        }
+      : card,
+  );
+    saveCards();
+    renderCards();
+    renderArchiveCards();
+    return;
+  }
+
+  if (permanentDeleteButton) {
+    const deleteId = Number(permanentDeleteButton.dataset.permanentDeleteId);
+    openPermanentDeleteDialog(deleteId);
+  }
+});
+
+cancelPermanentDelete.addEventListener("click", closePermanentDeleteDialog);
+
+confirmPermanentDelete.addEventListener("click", () => {
+  if (!pendingPermanentDeleteId) return;
+
+  cards = cards.filter((card) => card.id !== pendingPermanentDeleteId);
+  selectedCard = getActiveCards()[0] || null;
+  saveCards();
+  renderCards();
+  renderArchiveCards();
+  closePermanentDeleteDialog();
+});
+
+permanentDeleteDialog.addEventListener("click", (event) => {
+  if (event.target === permanentDeleteDialog) {
+    closePermanentDeleteDialog();
+  }
 });
 
 document.querySelectorAll(".sheet-backdrop").forEach((sheet) => {
@@ -535,8 +723,10 @@ document.querySelectorAll(".sheet-backdrop").forEach((sheet) => {
 });
 
 cards = cards.map(syncCardProgress);
+selectedCard = getActiveCards()[0] || cards[0] || null;
 saveCards();
 renderCards();
+renderArchiveCards();
 
 if (selectedCard) {
   updateDetail(selectedCard);
