@@ -40,18 +40,21 @@
             </div>
           </section>
 
-          <nav class="category-tabs" aria-label="카테고리">
+         
+          <div class="category-tabs" aria-label="카테고리 필터">
             <button class="tab-button active" data-filter="all" type="button">전체</button>
             <button class="tab-button" data-filter="학교" type="button">학교</button>
             <button class="tab-button" data-filter="대외활동" type="button">대외활동</button>
             <button class="tab-button" data-filter="개인 일정" type="button">개인 일정</button>
             <button class="tab-button" data-filter="기타" type="button">기타</button>
-          </nav>
+          </div>
 
           <section class="card-list" id="cardList" aria-label="정보 카드 목록"></section>
 
-          <button class="fab" id="openAddSheet" type="button" aria-label="새 정보 추가">+</button>
         </section>
+
+        <button class="fab" id="openAddSheet" type="button" aria-label="새 정보 추가">+</button>
+
 
         <section class="screen" id="detailScreen" data-screen="detail">
           <header class="screen-header">
@@ -80,6 +83,14 @@
             </div>
           </section>
 
+          <section class="info-panel">
+            <div class="info-row">
+              <span>체크리스트</span>
+              <strong id="detailChecklistCount">0/0</strong>
+            </div>
+            <ul class="detail-checklist" id="detailChecklist"></ul>
+          </section>
+
           <button class="reminder-card" id="openReminder" type="button">
             <div>
               <span>알림 ON/OFF</span>
@@ -92,8 +103,8 @@
 
           <div class="detail-actions">
             <button class="primary-button" id="openOriginal" type="button">원본 확인</button>
-            <button class="secondary-button" type="button">내용 수정</button>
-            <button class="danger-button" type="button">삭제</button>
+            <button class="secondary-button" id="openEditSheet" type="button">내용 수정</button>
+            <button class="danger-button" id="deleteCard" type="button">삭제</button>
           </div>
         </section>
 
@@ -220,12 +231,7 @@
           <h2 id="checklistTitle">체크리스트</h2>
           <button class="icon-button close-sheet" type="button" aria-label="닫기">×</button>
         </div>
-        <ul class="checklist">
-          <li>신청서 작성</li>
-          <li>성적 증명서 준비</li>
-          <li>오늘 작성</li>
-          <li>제출하기</li>
-        </ul>
+        <ul class="checklist" id="sheetChecklist"></ul>
       </section>
     </div>
 
@@ -236,12 +242,38 @@
           <h2 id="addTitle">새 정보 추가</h2>
           <button class="icon-button close-sheet" type="button" aria-label="닫기">×</button>
         </div>
-        <div class="quick-add-grid">
-          <button type="button">캡처</button>
-          <button type="button">링크</button>
-          <button type="button">메모</button>
-          <button type="button">파일</button>
-        </div>
+        <form class="card-form" id="cardForm">
+          <label class="field-label">
+            제목
+            <input id="formTitle" name="title" type="text" required />
+          </label>
+          <label class="field-label">
+            카테고리
+            <select id="formCategory" name="category">
+              <option>학교</option>
+              <option>대외활동</option>
+              <option>개인 일정</option>
+              <option>기타</option>
+            </select>
+          </label>
+          <label class="field-label">
+            마감일
+            <input id="formDue" name="due" type="date" required />
+          </label>
+          <label class="field-label">
+            요약
+            <textarea id="formSummary" name="summary" rows="3" required></textarea>
+          </label>
+          <label class="field-label">
+            태그
+            <input id="formTags" name="tags" type="text" placeholder="쉼표로 구분" />
+          </label>
+          <label class="field-label">
+            체크리스트
+            <textarea id="formChecklist" name="checklist" rows="4" placeholder="한 줄에 하나씩 입력"></textarea>
+          </label>
+          <button class="primary-button" type="submit">저장</button>
+        </form>
       </section>
     </div>
 

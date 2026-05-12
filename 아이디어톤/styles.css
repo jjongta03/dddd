@@ -31,7 +31,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -409,10 +410,15 @@ h3 {
   background: #e8f2ed;
 }
 
+app {
+  postion: relative;
+}
+
 .fab {
   position: absolute;
   right: 22px;
   bottom: 24px;
+  z-index: 30;
   width: 58px;
   height: 58px;
   border: 0;
@@ -622,7 +628,8 @@ h3 {
 }
 
 .field-label input,
-.field-label select {
+.field-label select,
+.field-label textarea {
   width: 100%;
   min-height: 48px;
   padding: 0 12px;
@@ -630,6 +637,13 @@ h3 {
   border-radius: 8px;
   background: #fff;
   color: var(--ink);
+}
+
+.field-label textarea {
+  min-height: 86px;
+  padding-top: 12px;
+  line-height: 1.45;
+  resize: vertical;
 }
 
 .radio-list {
@@ -696,24 +710,67 @@ h3 {
 }
 
 .checklist,
-.quick-add-grid {
+.quick-add-grid,
+.detail-checklist,
+.card-form {
   display: grid;
   gap: 8px;
   margin: 0;
   padding: 0;
 }
 
-.checklist {
+.checklist,
+.detail-checklist {
   list-style: none;
 }
 
-.checklist li {
+.checklist li,
+.detail-checklist li {
   min-height: 46px;
-  padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--soft);
   font-weight: 800;
+}
+
+.check-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+}
+
+.check-item input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--mint-dark);
+}
+
+.check-item span {
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.check-item input:checked + span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.empty-checklist,
+.empty-text {
+  padding: 14px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.card-form {
+  max-height: min(680px, calc(100vh - 140px));
+  overflow-y: auto;
+  padding-bottom: 2px;
 }
 
 .quick-add-grid {
