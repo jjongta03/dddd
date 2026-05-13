@@ -14,14 +14,85 @@
             <p class="eyebrow">컴퓨터공학과 3학년</p>
             <h1>김학생님, 오늘 볼 공지예요</h1>
           </div>
-          <button class="profile-button" type="button" aria-label="프로필">
-            김
-          </button>
+          <div class="top-actions">
+            <button
+              class="menu-button"
+              type="button"
+              aria-label="메뉴 열기"
+              aria-controls="mainMenu"
+              aria-expanded="false"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <button class="profile-button" type="button" aria-label="프로필">
+              김
+            </button>
+          </div>
         </header>
 
-        <section class="search-card" aria-label="AI 공지 검색">
-          <span aria-hidden="true">AI</span>
-          <p>학부연구생, 장학금, 인턴 공지를 한 번에 찾아보세요.</p>
+        <nav class="menu-panel" id="mainMenu" aria-label="주요 메뉴" aria-hidden="true">
+          <details class="menu-group" open>
+            <summary>전체 공지</summary>
+            <ul>
+              <li><a href="#">전체 공지</a></li>
+              <li><a href="#">학과 공지</a></li>
+              <li><a href="#">장학금</a></li>
+              <li><a href="#">비교과 프로그램</a></li>
+              <li><a href="#">취업/인턴</a></li>
+              <li><a href="#">졸업/학사</a></li>
+            </ul>
+          </details>
+          <details class="menu-group">
+            <summary>내 일정 관리</summary>
+            <ul>
+              <li><a href="#">전체 일정</a></li>
+              <li><a href="#">이번 주 마감</a></li>
+              <li><a href="#">오늘 할 일</a></li>
+              <li><a href="#">신청 예정</a></li>
+              <li><a href="#">신청 완료</a></li>
+            </ul>
+          </details>
+          <details class="menu-group">
+            <summary>AI 기능</summary>
+            <ul>
+              <li><a href="#">나에게 맞는 추천</a></li>
+              <li><a href="#">관심 분야 설정</a></li>
+              <li><a href="#">놓친 공지 확인</a></li>
+            </ul>
+          </details>
+          <details class="menu-group">
+            <summary>관심/저장 관리</summary>
+            <ul>
+              <li><a href="#">저장된 공지</a></li>
+              <li><a href="#">도전 공지</a></li>
+              <li><a href="#">최근 본 공지</a></li>
+              <li><a href="#">중요 표시된 공지</a></li>
+            </ul>
+          </details>
+          <details class="menu-group">
+            <summary>학교 서비스</summary>
+            <ul>
+              <li><a href="#">학교 홈페이지 바로가기</a></li>
+              <li><a href="#">LMS 바로가기</a></li>
+              <li><a href="#">취업지원센터</a></li>
+              <li><a href="#">장학팀</a></li>
+              <li><a href="#">비교과센터</a></li>
+              <li><a href="#">문의하기</a></li>
+            </ul>
+          </details>
+        </nav>
+
+        <section class="checklist-card" aria-labelledby="checklistTitle">
+          <div class="section-head">
+            <div>
+              <h2 id="checklistTitle">AI 체크리스트</h2>
+              <p>필요한 항목을 직접 추가하고 수정할 수 있어요.</p>
+            </div>
+            <button class="add-check-button" id="addCheckButton" type="button">추가</button>
+          </div>
+          <div class="checklist" id="checklist"></div>
         </section>
 
         <section class="section-block" aria-labelledby="calendarTitle">
@@ -32,14 +103,6 @@
           <div class="week-calendar" id="weekCalendar" aria-label="7일 주간 캘린더"></div>
         </section>
 
-        <section class="today-card" aria-labelledby="todayTitle">
-          <div class="section-head">
-            <h2 id="todayTitle">오늘 확인해야 할 내용</h2>
-            <span>3개</span>
-          </div>
-          <div class="today-list" id="todayList"></div>
-        </section>
-
         <section class="section-block" aria-labelledby="deadlineTitle">
           <div class="section-head">
             <h2 id="deadlineTitle">이번 주 마감 일정</h2>
@@ -48,24 +111,32 @@
           <div class="deadline-list" id="deadlineList"></div>
         </section>
 
-        <section class="section-block" aria-labelledby="recommendTitle">
-          <div class="section-head">
-            <h2 id="recommendTitle">AI 추천</h2>
-            <span>관심 분야 기반</span>
+        <section class="section-block smart-stack-section" aria-label="AI 추천과 실시간 인기 공지">
+          <div class="smart-stack" aria-label="AI 추천과 실시간 인기 공지">
+            <article class="stack-panel" aria-labelledby="recommendTitle">
+              <div class="stack-panel-head">
+                <h3 id="recommendTitle">AI 추천</h3>
+                <span>관심 분야 기반</span>
+              </div>
+              <div class="recommend-list" id="recommendList" aria-label="AI 추천 카드"></div>
+            </article>
+            <article class="stack-panel" aria-labelledby="popularTitle">
+              <div class="stack-panel-head">
+                <h3 id="popularTitle">실시간 인기 공지</h3>
+                <span>지금 많이 보는 공지</span>
+              </div>
+              <div class="popular-list" id="popularList" aria-label="실시간 인기 공지"></div>
+            </article>
           </div>
-          <div class="recommend-scroll" id="recommendList" aria-label="AI 추천 카드"></div>
-        </section>
-
-        <section class="section-block recent-section" aria-labelledby="recentTitle">
-          <div class="section-head">
-            <h2 id="recentTitle">최근 공지</h2>
-            <span>최신순</span>
-          </div>
-          <div class="notice-list" id="noticeList"></div>
         </section>
       </section>
 
-      <button class="fab" type="button" aria-label="공지 추가">+</button>
+      <form class="bottom-search" aria-label="공지 내용 검색">
+        <input type="search" placeholder="내용 검색" aria-label="검색어 입력" />
+        <button type="submit" aria-label="검색">
+          <span aria-hidden="true"></span>
+        </button>
+      </form>
     </main>
 
     <script src="./script.js"></script>

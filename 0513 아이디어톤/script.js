@@ -37,24 +37,18 @@ const weekDays = [
   },
 ];
 
-const todayTasks = [
+const checklistItems = [
   {
-    title: "AI 연구실 학부연구생 모집 공지 확인",
-    meta: "추천도 높음 · 컴퓨터공학과",
-    badge: "필독",
-    desc: "지원 조건과 제출 서류를 먼저 확인하세요.",
+    text: "지원 조건과 제출 서류 확인",
+    done: false,
   },
   {
-    title: "2026-1 성적우수 장학금 제출 서류",
-    meta: "마감 2일 전 · 장학",
-    badge: "서류",
-    desc: "성적증명서와 신청서 업로드 여부를 점검하세요.",
+    text: "마감 일정 캘린더에 표시",
+    done: true,
   },
   {
-    title: "하계 현장실습 사전 설명회",
-    meta: "오늘 17:00 · 취업지원",
-    badge: "오늘",
-    desc: "온라인 링크와 참석 확인 방법이 포함되어 있어요.",
+    text: "온라인 링크와 참석 방법 저장",
+    done: false,
   },
 ];
 
@@ -97,30 +91,21 @@ const recommendations = [
   },
 ];
 
-const notices = [
+const popularNotices = [
   {
-    mark: "학과",
-    title: "컴퓨터공학과 졸업작품 중간 점검 안내",
-    meta: "대상: 3, 4학년 · 학과사무실",
-    date: "5.13",
-  },
-  {
-    mark: "장학",
-    title: "2026학년도 1학기 교내 장학금 추가 신청",
-    meta: "성적증명서, 신청서 제출 필요",
-    date: "5.12",
-  },
-  {
-    mark: "비교과",
-    title: "AI 포트폴리오 작성 특강 모집",
-    meta: "온라인 특강 · 선착순 40명",
-    date: "5.11",
-  },
-  {
-    mark: "취업",
+    rank: "1",
     title: "하계 인턴십 추천 채용 공고",
-    meta: "SW 개발, 데이터 분석 직무",
-    date: "5.10",
+    meta: "조회 급상승 · SW 개발, 데이터 분석",
+  },
+  {
+    rank: "2",
+    title: "2026학년도 1학기 교내 장학금 추가 신청",
+    meta: "마감 임박 · 서류 제출 필요",
+  },
+  {
+    rank: "3",
+    title: "AI 포트폴리오 작성 특강 모집",
+    meta: "선착순 40명 · 비교과 포인트 인정",
   },
 ];
 
@@ -151,6 +136,23 @@ function renderWeekCalendar() {
             }
           </div>
         </div>
+      `,
+    )
+    .join("");
+}
+
+function renderChecklist() {
+  const target = document.querySelector("#checklist");
+
+  target.innerHTML = checklistItems
+    .map(
+      (item, index) => `
+        <label class="check-row">
+          <input type="checkbox" data-index="${index}" ${item.done ? "checked" : ""} />
+          <span aria-hidden="true"></span>
+          <input type="text" data-index="${index}" value="${item.text}" aria-label="체크리스트 항목" />
+          <button class="delete-check-button" type="button" data-index="${index}" aria-label="체크리스트 항목 삭제"></button>
+        </label>
       `,
     )
     .join("");
@@ -191,27 +193,92 @@ function renderRecommendations() {
     .join("");
 }
 
-function renderNotices() {
-  const target = document.querySelector("#noticeList");
+function renderPopularNotices() {
+  const target = document.querySelector("#popularList");
 
-  target.innerHTML = notices
+  target.innerHTML = popularNotices
     .map(
       (item) => `
-        <article class="notice-row">
-          <span class="notice-mark">${item.mark}</span>
+        <article class="popular-card">
+          <span class="rank">${item.rank}</span>
           <div>
             <strong>${item.title}</strong>
             <p>${item.meta}</p>
           </div>
-          <span class="notice-date">${item.date}</span>
         </article>
       `,
     )
     .join("");
 }
 
+function bindChecklist() {
+  const checklist = document.querySelector("#checklist");
+  const addButton = document.querySelector("#addCheckButton");
+
+  checklist.addEventListener("change", (event) => {
+    if (event.target.type !== "checkbox") return;
+    checklistItems[event.target.dataset.index].done = event.target.checked;
+  });
+
+  checklist.addEventListener("input", (event) => {
+    if (event.target.type !== "text") return;
+    checklistItems[event.target.dataset.index].text = event.target.value;
+  });
+
+  checklist.addEventListener("click", (event) => {
+    if (!event.target.classList.contains("delete-check-button")) return;
+    checklistItems.splice(event.target.dataset.index, 1);
+    renderChecklist();
+  });
+
+  addButton.addEventListener("click", () => {
+    checklistItems.push({ text: "새 체크리스트", done: false });
+    renderChecklist();
+    checklist.querySelector(".check-row:last-child input[type='text']").select();
+  });
+}
+
+function bindSearch() {
+  document.querySelector(".bottom-search").addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+}
+
+function bindMenu() {
+  const menuButton = document.querySelector(".menu-button");
+  const menuPanel = document.querySelector("#mainMenu");
+
+  const setMenuOpen = (isOpen) => {
+    menuButton.classList.toggle("is-open", isOpen);
+    menuPanel.classList.toggle("is-open", isOpen);
+    menuButton.setAttribute("aria-expanded", String(isOpen));
+    menuButton.setAttribute("aria-label", isOpen ? "메뉴 닫기" : "메뉴 열기");
+    menuPanel.setAttribute("aria-hidden", String(!isOpen));
+  };
+
+  menuButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setMenuOpen(!menuPanel.classList.contains("is-open"));
+  });
+
+  menuPanel.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+
+  document.addEventListener("click", () => {
+    setMenuOpen(false);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setMenuOpen(false);
+  });
+}
+
 renderWeekCalendar();
-renderRows("#todayList", todayTasks, "task-row");
+renderChecklist();
 renderRows("#deadlineList", deadlines, "deadline-row");
 renderRecommendations();
-renderNotices();
+renderPopularNotices();
+bindChecklist();
+bindMenu();
+bindSearch();
