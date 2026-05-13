@@ -1,11 +1,40 @@
 const weekDays = [
-  { day: "수", date: "13", today: true },
-  { day: "목", date: "14" },
-  { day: "금", date: "15" },
-  { day: "토", date: "16" },
-  { day: "일", date: "17" },
-  { day: "월", date: "18" },
-  { day: "화", date: "19" },
+  {
+    day: "수",
+    date: "13",
+    today: true,
+    bars: [{ label: "설명회", tone: "dark" }, { label: "공지", tone: "mid" }],
+  },
+  {
+    day: "목",
+    date: "14",
+    bars: [{ label: "서류", tone: "mid" }],
+  },
+  {
+    day: "금",
+    date: "15",
+    bars: [{ label: "장학", tone: "dark" }, { label: "상담", tone: "light" }],
+  },
+  {
+    day: "토",
+    date: "16",
+    bars: [],
+  },
+  {
+    day: "일",
+    date: "17",
+    bars: [{ label: "아이디어톤", tone: "mid" }],
+  },
+  {
+    day: "월",
+    date: "18",
+    bars: [{ label: "인턴", tone: "light" }],
+  },
+  {
+    day: "화",
+    date: "19",
+    bars: [{ label: "연구실", tone: "dark" }],
+  },
 ];
 
 const todayTasks = [
@@ -13,16 +42,19 @@ const todayTasks = [
     title: "AI 연구실 학부연구생 모집 공지 확인",
     meta: "추천도 높음 · 컴퓨터공학과",
     badge: "필독",
+    desc: "지원 조건과 제출 서류를 먼저 확인하세요.",
   },
   {
     title: "2026-1 성적우수 장학금 제출 서류",
     meta: "마감 2일 전 · 장학",
     badge: "서류",
+    desc: "성적증명서와 신청서 업로드 여부를 점검하세요.",
   },
   {
     title: "하계 현장실습 사전 설명회",
     meta: "오늘 17:00 · 취업지원",
     badge: "오늘",
+    desc: "온라인 링크와 참석 확인 방법이 포함되어 있어요.",
   },
 ];
 
@@ -31,16 +63,19 @@ const deadlines = [
     title: "학부연구생 지원서 제출",
     meta: "AI·임베디드 연구실",
     badge: "D-1",
+    desc: "자기소개서와 시간표 첨부가 필요합니다.",
   },
   {
     title: "교내 SW 아이디어톤 신청",
     meta: "팀 정보 및 기획서 업로드",
     badge: "D-3",
+    desc: "팀원 정보와 1페이지 기획안을 준비하세요.",
   },
   {
     title: "국가근로 장학생 희망근로지 신청",
     meta: "한국장학재단 연계",
     badge: "D-5",
+    desc: "희망근로지 선택 후 신청 상태를 확인하세요.",
   },
 ];
 
@@ -96,8 +131,25 @@ function renderWeekCalendar() {
     .map(
       (item) => `
         <div class="day-chip ${item.today ? "is-today" : ""}">
-          <small>${item.day}</small>
-          <strong>${item.date}</strong>
+          <div class="day-label">
+            <small>${item.day}</small>
+            <strong>${item.date}</strong>
+          </div>
+          <div class="schedule-bars">
+            ${
+              item.bars.length > 0
+                ? item.bars
+                    .map(
+                      (bar) => `
+                        <span class="schedule-bar is-${bar.tone}">
+                          ${bar.label}
+                        </span>
+                      `,
+                    )
+                    .join("")
+                : '<span class="schedule-empty">-</span>'
+            }
+          </div>
         </div>
       `,
     )
@@ -111,11 +163,12 @@ function renderRows(targetId, items, className) {
     .map(
       (item) => `
         <article class="${className}">
+          <span class="badge">${item.badge}</span>
           <div>
             <strong>${item.title}</strong>
             <p>${item.meta}</p>
           </div>
-          <span class="badge">${item.badge}</span>
+          <em>${item.desc}</em>
         </article>
       `,
     )
